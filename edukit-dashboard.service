@@ -1,0 +1,20 @@
+[Unit]
+Description=EduKit PA Dashboard (API + Frontend)
+# Startet nachdem das Netzwerk (AP) bereit ist
+After=network.target NetworkManager.service
+Wants=NetworkManager.service
+
+[Service]
+Type=simple
+User=creampi
+WorkingDirectory=/home/creampi/Documents/Projects/Fuellstandsregelung_Festo_Edukit/festo-dpa-level-control
+ExecStart=/home/creampi/Documents/Projects/Fuellstandsregelung_Festo_Edukit/festo-dpa-level-control/edukit-service.sh
+# Bei Absturz automatisch neu starten
+Restart=on-failure
+RestartSec=5s
+# Logs via journalctl sichtbar
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

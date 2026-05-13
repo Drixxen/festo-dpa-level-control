@@ -1,5 +1,5 @@
 {
-  "port": "/dev/cu.usbserial-AC00K3IP",
+  "port": "/dev/ttyUSB0",
   "address": 1,
   "pump_mode": "analog",
   "pump_bit": 3,

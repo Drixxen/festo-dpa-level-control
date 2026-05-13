@@ -143,7 +143,8 @@ const colors = {
   compare: "#fb7185"
 };
 
-const controlApi = process.env.NEXT_PUBLIC_CONTROL_API ?? "http://127.0.0.1:8080";
+const controlApi = process.env.NEXT_PUBLIC_CONTROL_API ??
+  (typeof window !== "undefined" ? `http://${window.location.hostname}:8080` : "http://127.0.0.1:8080");
 function mockInitialPlant(): PlantState {
   return {
     level: 38,

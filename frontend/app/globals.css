@@ -52,6 +52,7 @@ button,
 input,
 select {
   font: inherit;
+  touch-action: manipulation;
 }
 
 button {
@@ -108,7 +109,7 @@ input[type="range"] {
 }
 
 .appShell {
-  height: 100vh;
+  height: 100dvh;
   padding: 14px;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
@@ -1233,7 +1234,73 @@ input[type="range"] {
   vertical-align: middle;
 }
 
-@media (max-width: 1120px) {
+/* Tablet landscape: iPad Air/Pro querformat – 2-Spalten bleibt, aber kompakter */
+@media (min-width: 820px) and (max-width: 1120px) {
+  .appShell {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .grid {
+    grid-template-columns: 270px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .grid > .column:first-child {
+    grid-template-rows: minmax(180px, auto) minmax(0, 1fr);
+  }
+
+  .grid > .column:nth-child(2) {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .workArea {
+    grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .metricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .topbar {
+    padding: 8px 14px;
+    min-height: 56px;
+  }
+
+  .brand h1 {
+    font-size: 17px;
+  }
+
+  .mark {
+    width: 38px;
+    height: 38px;
+  }
+
+  .plantScene {
+    grid-template-columns: minmax(160px, 220px) 80px;
+    padding-top: 44px;
+  }
+
+  .tank {
+    height: min(48vh, 400px);
+    min-height: 300px;
+  }
+
+  .returnLoop {
+    width: 80px;
+    height: min(38vh, 280px);
+    min-height: 200px;
+  }
+
+  .widget {
+    padding: 11px;
+  }
+}
+
+/* Tablet portrait / kleiner – alles untereinander, scrollbar */
+@media (max-width: 819px) {
   html,
   body {
     overflow: auto;
@@ -1241,6 +1308,8 @@ input[type="range"] {
 
   .appShell {
     height: auto;
+    padding: 10px;
+    gap: 10px;
   }
 
   .grid {
@@ -1254,7 +1323,7 @@ input[type="range"] {
   }
 
   .plantScene {
-    grid-template-columns: minmax(210px, 1fr) 96px;
+    grid-template-columns: minmax(180px, 1fr) 90px;
   }
 
   .metricGrid {
@@ -1262,6 +1331,13 @@ input[type="range"] {
   }
 
   .workArea {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .autotuneCards,
+  .autotuneSplit {
     grid-template-columns: 1fr;
   }
 }
@@ -1407,11 +1483,4 @@ input[type="range"] {
   color: var(--soft);
   padding: 5px 0;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-@media (max-width: 760px) {
-  .autotuneCards,
-  .autotuneSplit {
-    grid-template-columns: 1fr;
-  }
 }
