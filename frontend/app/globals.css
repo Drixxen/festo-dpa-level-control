@@ -111,7 +111,7 @@ input[type="range"] {
   height: 100vh;
   padding: 14px;
   display: grid;
-  grid-template-rows: 66px minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 14px;
   overflow: hidden;
 }
@@ -129,7 +129,7 @@ input[type="range"] {
     rgba(38, 44, 53, 0.45);
   box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.18);
   backdrop-filter: blur(34px) saturate(1.12);
-  min-height: 0;
+  min-height: 66px;
 }
 
 .brand {
@@ -255,8 +255,9 @@ input[type="range"] {
 }
 
 .regulatorWidget {
-  display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  display: block;
+  overflow-y: auto;
+  padding-bottom: 18px;
 }
 
 .widgetHeader {
@@ -330,7 +331,7 @@ input[type="range"] {
 
 .metricGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 14px;
   min-height: 0;
 }
@@ -870,16 +871,6 @@ input[type="range"] {
   background: linear-gradient(180deg, rgba(230, 235, 242, 0.92), rgba(155, 166, 180, 0.74));
 }
 
-.pulseStatus {
-  margin-top: 9px;
-  padding: 8px 10px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  color: var(--soft);
-  background: rgba(255, 255, 255, 0.045);
-  font-size: 12px;
-}
-
 .compactField {
   margin: 0;
 }
@@ -972,24 +963,143 @@ input[type="range"] {
   gap: 12px;
 }
 
-.regulatorSummary {
+.quickTuneGrid {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 7px 12px;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.setpointRow {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  align-items: end;
+}
+
+.applyInput {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(132px, 0.55fr);
+  gap: 8px;
+}
+
+.applyInput button {
+  min-height: 34px;
+  padding-inline: 10px;
+  white-space: nowrap;
+}
+
+.outputReadout {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.outputReadoutTop,
+.outputMeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.outputReadoutTop span,
+.outputMeta {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.outputReadoutTop strong {
+  font-size: 20px;
+}
+
+.outputBar {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.outputBar span {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), var(--blue));
+}
+
+.flowOk {
+  color: #b9efd0;
+}
+
+.flowLow {
+  color: #ead8bd;
+}
+
+.autotuneStatus {
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.autotuneStatus strong {
+  font-size: 12px;
+}
+
+.autotuneStatus span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.autotuneInline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.autotuneInline div {
+  display: grid;
+  gap: 2px;
+}
+
+.autotuneInline strong {
+  font-size: 12px;
+}
+
+.autotuneInline span {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.autotuneInline button {
+  min-height: 34px;
+  padding: 7px 9px;
+}
+
+.pidTunePanel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 12px;
   padding: 12px;
   border: 1px solid var(--line);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.04);
 }
 
-.regulatorSummary span {
-  color: var(--muted);
+.saveMessage {
+  color: #b9efd0;
   font-size: 12px;
-}
-
-.regulatorSummary strong {
-  color: var(--ink);
-  font-size: 13px;
 }
 
 .regulatorExpert {
@@ -1009,6 +1119,28 @@ input[type="range"] {
   border-radius: 14px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.06);
+}
+
+.modeSegmented {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.iconButton {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.slimSegmented {
+  margin-top: 8px;
+  padding: 4px;
+}
+
+.slimSegmented button {
+  min-height: 34px;
 }
 
 .segmented button {
@@ -1125,7 +1257,161 @@ input[type="range"] {
     grid-template-columns: minmax(210px, 1fr) 96px;
   }
 
+  .metricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .workArea {
+    grid-template-columns: 1fr;
+  }
+}
+
+.infoOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(4, 8, 14, 0.64);
+}
+
+.infoPanel {
+  width: min(820px, 100%);
+  max-height: min(760px, 92vh);
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.05)),
+    rgba(26, 31, 39, 0.96);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.infoHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.infoHeader h2 {
+  margin: 0;
+}
+
+.infoHeader span,
+.infoContent p {
+  color: var(--muted);
+}
+
+.infoContent {
+  overflow: auto;
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.infoContent section {
+  display: grid;
+  gap: 5px;
+}
+
+.infoContent h3,
+.infoContent p {
+  margin: 0;
+}
+
+.autotunePanel {
+  width: min(980px, 100%);
+}
+
+.modalActions {
+  display: flex;
+  gap: 8px;
+}
+
+.autotuneBody {
+  overflow: auto;
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.autotuneCards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.phaseValue {
+  font-size: 20px;
+}
+
+.autotuneProgress {
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.autotuneProgress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--green), var(--amber));
+}
+
+.autotuneSplit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.autotuneTable {
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.autotuneTable h3,
+.autotuneTable p {
+  margin: 0;
+}
+
+.autotuneTable p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.tableHead,
+.tableRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  font-size: 12px;
+}
+
+.tableHead {
+  color: var(--muted);
+}
+
+.tableRow {
+  color: var(--soft);
+  padding: 5px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 760px) {
+  .autotuneCards,
+  .autotuneSplit {
     grid-template-columns: 1fr;
   }
 }

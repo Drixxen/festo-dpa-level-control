@@ -17,6 +17,8 @@ class EduKitConfig:
     address: int = 1
     pump_mode: str = "digital_pwm"
     pump_bit: int = 3
+    # In this EduKit wiring DO2 enables the analog pump path; DO3 remains the pump enable.
+    pump_digital_control_bit: int = 2
     pump_analog_channel: int = 0
     drain_valve_bit: int = 0
     level_channel: int = 1
@@ -36,6 +38,18 @@ class EduKitConfig:
     max_duty_percent: float = 100.0
     max_valve_percent: float = 100.0
     manual_max_duty_percent: float = 100.0
+    min_pump_effective_percent: float = 0.0
+    flow_start_threshold_percent: float = 3.0
+    min_flow_percent: float = 8.0
+    flow_boost_gain: float = 4.0
+    autotune_output_percent: float = 45.0
+    autotune_hysteresis_percent: float = 2.0
+    autotune_max_duration_s: float = 180.0
+    autotune_curve_step_percent: float = 10.0
+    autotune_curve_hold_s: float = 4.0
+    autotune_start_level_percent: float = 5.0
+    autotune_end_level_percent: float = 70.0
+    autotune_level_noise_percent: float = 1.0
     pump_deadband_percent: float = 1.0
     valve_deadband_percent: float = 1.0
     level_tolerance_percent: float = 3.0
@@ -52,6 +66,8 @@ class EduKitConfig:
     analog_filter_window_s: float = 1.0
     analog_outlier_raw: int = 180
     analog_outlier_confirm: int = 2
+    control_strategy: str = "three_point"
+    three_point_pump_mode: str = "analog"
 
     @classmethod
     def load(cls, path: Union[str, Path] = "edukit_config.json") -> "EduKitConfig":
@@ -95,6 +111,7 @@ class EduKitPA:
         self._filtered_raw: dict[str, float] = {}
         self._outlier_counts: dict[str, int] = {}
         self._raw_windows: dict[str, Deque[tuple[float, int]]] = {}
+        self._prepared_pump_mode: Optional[str] = None
 
     def close(self) -> None:
         with self._io_lock:
@@ -163,6 +180,21 @@ class EduKitPA:
         with self._io_lock:
             self.easyport.set_digital_output(self.config.drain_valve_bit, enabled)
 
+    def prepare_pump_mode(self, mode: str, *, reset_output: bool = True) -> None:
+        if mode not in {"analog", "digital_pwm"}:
+            raise ValueError("pump mode must be 'analog' or 'digital_pwm'")
+        with self._io_lock:
+            self.config.pump_mode = mode
+            if mode == "analog":
+                self._set_pump_analog_enable(True)
+                if reset_output:
+                    self.easyport.write_analog_output_raw(self.config.pump_analog_channel, 0)
+            else:
+                if reset_output:
+                    self.easyport.write_analog_output_raw(self.config.pump_analog_channel, 0)
+                self._set_pump_analog_enable(False)
+            self._prepared_pump_mode = mode
+
     def _read_filtered_analog(self, key: str, channel: int) -> int:
         sample_count = max(1, int(self.config.analog_filter_samples))
         if sample_count == 1:
@@ -215,8 +247,11 @@ class EduKitPA:
         with self._io_lock:
             value = clamp(percent, 0.0, 100.0)
             if self.config.pump_mode == "analog":
+                if self._prepared_pump_mode != "analog":
+                    self.prepare_pump_mode("analog", reset_output=False)
                 raw = round(value / 100.0 * 0x7FF8)
                 self.easyport.write_analog_output_raw(self.config.pump_analog_channel, raw)
+                self.easyport.set_digital_output(self.config.pump_bit, value > 0.0)
                 return
             self.set_pump(value > 0.0)
 
@@ -233,8 +268,15 @@ class EduKitPA:
 
     def _pump_feedback(self, digital_outputs: int, analog_output_raw: int) -> bool:
         if self.config.pump_mode == "analog":
-            return analog_output_raw > 0
+            pump_enabled = self._digital_output_feedback(digital_outputs, self.config.pump_bit)
+            analog_enabled = self._digital_output_feedback(digital_outputs, self.config.pump_digital_control_bit)
+            return pump_enabled and analog_enabled and analog_output_raw > 0
         return self._digital_output_feedback(digital_outputs, self.config.pump_bit)
+
+    def _set_pump_analog_enable(self, enabled: bool) -> None:
+        bit = self.config.pump_digital_control_bit
+        if 0 <= bit <= 15:
+            self.easyport.set_digital_output(bit, enabled)
 
     @staticmethod
     def _digital_output_feedback(digital_outputs: int, bit: int) -> bool:

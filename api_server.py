@@ -55,6 +55,7 @@ class ApiHandler(BaseHTTPRequestHandler):
                 return
             if self.path == "/api/config":
                 self.loop.set_control_config(
+                    max_duty_percent=float(body.get("max_duty_percent", self.loop.config.max_duty_percent)),
                     level_tolerance_percent=float(
                         body.get("level_tolerance_percent", self.loop.config.level_tolerance_percent)
                     ),
@@ -80,7 +81,45 @@ class ApiHandler(BaseHTTPRequestHandler):
                         body.get("valve_fine_tap_pause_s", self.loop.config.valve_fine_tap_pause_s)
                     ),
                     actuator_pause_s=float(body.get("actuator_pause_s", self.loop.config.actuator_pause_s)),
+                    min_pump_effective_percent=float(
+                        body.get("min_pump_effective_percent", self.loop.config.min_pump_effective_percent)
+                    ),
+                    flow_start_threshold_percent=float(
+                        body.get("flow_start_threshold_percent", self.loop.config.flow_start_threshold_percent)
+                    ),
+                    min_flow_percent=float(body.get("min_flow_percent", self.loop.config.min_flow_percent)),
+                    flow_boost_gain=float(body.get("flow_boost_gain", self.loop.config.flow_boost_gain)),
+                    autotune_output_percent=float(
+                        body.get("autotune_output_percent", self.loop.config.autotune_output_percent)
+                    ),
+                    autotune_hysteresis_percent=float(
+                        body.get("autotune_hysteresis_percent", self.loop.config.autotune_hysteresis_percent)
+                    ),
+                    autotune_curve_step_percent=float(
+                        body.get("autotune_curve_step_percent", self.loop.config.autotune_curve_step_percent)
+                    ),
+                    autotune_curve_hold_s=float(
+                        body.get("autotune_curve_hold_s", self.loop.config.autotune_curve_hold_s)
+                    ),
+                    autotune_start_level_percent=float(
+                        body.get("autotune_start_level_percent", self.loop.config.autotune_start_level_percent)
+                    ),
+                    autotune_end_level_percent=float(
+                        body.get("autotune_end_level_percent", self.loop.config.autotune_end_level_percent)
+                    ),
+                    control_strategy=str(body.get("control_strategy", self.loop.config.control_strategy)),
+                    three_point_pump_mode=str(
+                        body.get("three_point_pump_mode", self.loop.config.three_point_pump_mode)
+                    ),
                 )
+                self._send_json({"ok": True})
+                return
+            if self.path == "/api/autotune/start":
+                self.loop.start_autotune()
+                self._send_json({"ok": True})
+                return
+            if self.path == "/api/autotune/stop":
+                self.loop.stop_autotune()
                 self._send_json({"ok": True})
                 return
             if self.path == "/api/stop":
